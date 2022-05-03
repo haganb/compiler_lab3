@@ -4,8 +4,8 @@
 #include <string.h>
 #include "node.h"
 #include "stack.h"
-#include "registers.h"
 #include "blocks.h"
+#include "latency.h"
 
 /* Compiler Design
 University of Delaware Spring 2022
@@ -211,6 +211,7 @@ int main(int argc, char* argv[]){
     // Task #2
     printf("\n****************************\n");
     printf("Performance Modelling (Task #2):\n");
+    calculateLatency(STACK);
 
     // Complete
     fclose(yyin);

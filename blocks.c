@@ -3,12 +3,14 @@
 #include "node.h"
 
 void buildBasicBlocks(struct stack* s){
+    int bufferSize = 2048;
+
     int blockCounter = 1; // track number of blocks
-    char output[1024]; // used to store all output
-    char labelBuffer[1024]; // used to store labels
-    char instructionBuffer[1024];
-    char conditionalBuffer[1024];
-    char blockBuffer[1024];
+    char output[bufferSize]; // used to store all output
+    char labelBuffer[bufferSize]; // used to store labels
+    char instructionBuffer[bufferSize];
+    char conditionalBuffer[bufferSize];
+    char blockBuffer[bufferSize];
 
     // Add first block label
     sprintf(labelBuffer, "BB%d:\n", blockCounter); 
@@ -35,7 +37,7 @@ void buildBasicBlocks(struct stack* s){
                     sprintf(blockBuffer, "\t%s", delimited);
 
                     // add new block label
-                    char newBlockLabel[1024];
+                    char newBlockLabel[bufferSize];
                     blockCounter++;
                     ifLabelID = blockCounter;
                     sprintf(newBlockLabel, "\n\t\tgoto BB%d;\n", ifLabelID);
@@ -47,7 +49,7 @@ void buildBasicBlocks(struct stack* s){
                     sprintf(blockBuffer, "\t%s", delimited);
 
                     // add new block label
-                    char newBlockLabel[1024];
+                    char newBlockLabel[bufferSize];
                     blockCounter++;
                     elseLabelID = blockCounter;
                     sprintf(newBlockLabel, "\n\t\tgoto BB%d;\n\t}", elseLabelID);
@@ -60,14 +62,14 @@ void buildBasicBlocks(struct stack* s){
             int finalBlockID = elseLabelID + 1; // need this id for proper labelling, final block ID should always come 1 after the else block ID
 
             // Step Two: Create IF basic block
-            char ifBlock[1024];
+            char ifBlock[bufferSize];
             sprintf(ifBlock, "\nBB%d:\n", ifLabelID);
             sprintf(conditionalBuffer, "%s", pointer->equation); // split by newline
             delimited = strtok(conditionalBuffer, "\n");
             while(delimited != NULL){
                 if(strncmp(delimited, "if(", 3) == 0){
-                    char ifBuffer[1024];
-                    char ifBlockBuffer[1024];
+                    char ifBuffer[bufferSize];
+                    char ifBlockBuffer[bufferSize];
                     ifBlockBuffer[0] = '\0';
                     delimited = strtok(NULL, "\n"); // enter into the conditional block
                     while(strncmp(delimited, "}", 1) != 0){
@@ -77,7 +79,7 @@ void buildBasicBlocks(struct stack* s){
                     }
                     strcat(ifBlock, ifBlockBuffer);
                     // Add jump to final label
-                    char finalLabelJump[1024];
+                    char finalLabelJump[bufferSize];
                     sprintf(finalLabelJump, "\tgoto BB%d;\n", finalBlockID);
                     strcat(ifBlock, finalLabelJump);
                 }
@@ -86,14 +88,14 @@ void buildBasicBlocks(struct stack* s){
             strcat(output, ifBlock);
 
             // Step Three: Create ELSE basic block
-            char elseBlock[1024];
+            char elseBlock[bufferSize];
             sprintf(elseBlock, "\nBB%d:\n", elseLabelID);
             sprintf(conditionalBuffer, "%s", pointer->equation); // split by newline
             delimited = strtok(conditionalBuffer, "\n");
             while(delimited != NULL){
                 if(strncmp(delimited, "} else {", 8) == 0){
-                    char elseBuffer[1024];
-                    char elseBlockBuffer[1024];
+                    char elseBuffer[bufferSize];
+                    char elseBlockBuffer[bufferSize];
                     elseBlockBuffer[0] = '\0';
                     delimited = strtok(NULL, "\n"); // enter into the conditional block
                     while(strncmp(delimited, "}", 1) != 0){
@@ -104,7 +106,7 @@ void buildBasicBlocks(struct stack* s){
                     }
                     strcat(elseBlock, elseBlockBuffer);
                     // Add jump to final label
-                    char finalLabelJump[1024];
+                    char finalLabelJump[bufferSize];
                     sprintf(finalLabelJump, "\tgoto BB%d;\n", finalBlockID);
                     strcat(elseBlock, finalLabelJump);
                 }
@@ -114,7 +116,7 @@ void buildBasicBlocks(struct stack* s){
             strcat(output, elseBlock);
 
             // Step Four: Create final basic block for post conditional
-            char finalBlockLabel[1024];
+            char finalBlockLabel[bufferSize];
             blockCounter++;
             sprintf(finalBlockLabel, "\nBB%d:\n", finalBlockID);
             strcat(output, finalBlockLabel);
