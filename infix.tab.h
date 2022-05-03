@@ -59,7 +59,7 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 35 "infix.y"
+#line 37 "infix.y"
 
     int d; /* value */
     char name[32]; /* for variables */

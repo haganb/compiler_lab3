@@ -1,3 +1,6 @@
+#ifndef _REGISTERS_H_
+#define _REGISTERS_H_
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -23,3 +26,5 @@ struct graph{
 }graph;
 
 void allocateRegisters(struct stack* s);
+
+#endif

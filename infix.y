@@ -5,10 +5,11 @@
 #include "node.h"
 #include "stack.h"
 #include "registers.h"
+#include "blocks.h"
 
 /* Compiler Design
 University of Delaware Spring 2022
-Lab 2: Calculator Compiler Backend
+Lab 3: Calculator Compiler Middle End
 Hagan Beatson */
 
 #define DEBUG /* for debugging purposes */
@@ -22,6 +23,7 @@ int tmpNum = 1; // pointer to keep track of placeholder nodes
 struct stack* STACK; // global stack structure
 struct node* HEAD; // global head node
 char inputVariables[BUFFERSIZE]; // array to keep track of which variables are user defined and which are not
+int BLOCK_COUNTER = 1;
 
 // Function declarations
 void addNewInputVariable(char* name);
@@ -146,6 +148,9 @@ expression :
         strcat(exp, exp_else);
         sprintf($$->equation, "%s", exp);
         sprintf($$->liveVars, "%s,%s,%s", $$->nodeName, $1->nodeName, $3->nodeName); // needed for task #2;
+
+
+
     }
     | '!' expression {
         // same as + case, just change operation
@@ -196,11 +201,16 @@ int main(int argc, char* argv[]){
     yyin = fopen("equation.txt", "r"); // file should always be equation.txt
     printf("\n"); // TODO: Program segfaults without this. What is going on?
     yyparse();
+    printStack(STACK);
 
     // Task #1
     printf("\n****************************\n");
-    printf("Revised Frontend (Task #1):\n");
-    printStack(STACK);  
+    printf("Generating Basic Blocks (Task #1):\n");  
+    buildBasicBlocks(STACK);
+
+    // Task #2
+    printf("\n****************************\n");
+    printf("Performance Modelling (Task #2):\n");
 
     // Complete
     fclose(yyin);

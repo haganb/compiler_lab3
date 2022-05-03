@@ -1,3 +1,6 @@
+#ifndef _NODE_H_
+#define _NODE_H_
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -19,3 +22,5 @@ struct node* findNode(char* nodeName, int nodeVal, struct node* n);
 // Helper Functions
 void deleteNodes(struct node* head);
 void printList(struct node* head);
+
+#endif

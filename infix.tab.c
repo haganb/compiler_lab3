@@ -74,10 +74,11 @@
 #include "node.h"
 #include "stack.h"
 #include "registers.h"
+#include "blocks.h"
 
 /* Compiler Design
 University of Delaware Spring 2022
-Lab 2: Calculator Compiler Backend
+Lab 3: Calculator Compiler Middle End
 Hagan Beatson */
 
 #define DEBUG /* for debugging purposes */
@@ -91,6 +92,7 @@ int tmpNum = 1; // pointer to keep track of placeholder nodes
 struct stack* STACK; // global stack structure
 struct node* HEAD; // global head node
 char inputVariables[BUFFERSIZE]; // array to keep track of which variables are user defined and which are not
+int BLOCK_COUNTER = 1;
 
 // Function declarations
 void addNewInputVariable(char* name);
@@ -100,7 +102,7 @@ void yyerror(char *ps, ...) { /* need this to avoid link problem */
 }
 
 
-#line 104 "infix.tab.c"
+#line 106 "infix.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -158,13 +160,13 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 35 "infix.y"
+#line 37 "infix.y"
 
     int d; /* value */
     char name[32]; /* for variables */
     struct node* node;
 
-#line 168 "infix.tab.c"
+#line 170 "infix.tab.c"
 
 };
 typedef union YYSTYPE YYSTYPE;
@@ -540,8 +542,8 @@ static const yytype_int8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    53,    53,    53,    56,    58,    62,    65,    68,    71,
-      81,    90,    99,   108,   120,   150,   164,   171
+       0,    55,    55,    55,    58,    60,    64,    67,    70,    73,
+      83,    92,   101,   110,   122,   155,   169,   176
 };
 #endif
 
@@ -1347,46 +1349,46 @@ yyreduce:
   switch (yyn)
     {
   case 4:
-#line 56 "infix.y"
+#line 58 "infix.y"
                {}
-#line 1353 "infix.tab.c"
+#line 1355 "infix.tab.c"
     break;
 
   case 5:
-#line 58 "infix.y"
+#line 60 "infix.y"
        {
         (yyval.node) = newNode("Tmp", (yyvsp[0].d));
         sprintf((yyval.node)->nodeName, "%d", (yyvsp[0].d));
     }
-#line 1362 "infix.tab.c"
+#line 1364 "infix.tab.c"
     break;
 
   case 6:
-#line 62 "infix.y"
+#line 64 "infix.y"
                          {
         (yyval.node) = (yyvsp[-1].node);
     }
-#line 1370 "infix.tab.c"
+#line 1372 "infix.tab.c"
     break;
 
   case 7:
-#line 65 "infix.y"
+#line 67 "infix.y"
                          {
         printf("ERROR, bad parentheses\n");
     }
-#line 1378 "infix.tab.c"
+#line 1380 "infix.tab.c"
     break;
 
   case 8:
-#line 68 "infix.y"
+#line 70 "infix.y"
                          {
         printf("ERROR, bad parentheses\n"); // no need for debug flags, should always print
     }
-#line 1386 "infix.tab.c"
+#line 1388 "infix.tab.c"
     break;
 
   case 9:
-#line 71 "infix.y"
+#line 73 "infix.y"
                                 {
         int output = (yyvsp[-2].node)->nodeVal + (yyvsp[0].node)->nodeVal; // result of operation
         (yyval.node) = push(STACK, "Tmp", output); // push tmp node to stack
@@ -1397,11 +1399,11 @@ yyreduce:
         // create attribute for live variables, have to ignore numbers
         sprintf((yyval.node)->liveVars, "%s,%s,%s", (yyval.node)->nodeName, (yyvsp[-2].node)->nodeName, (yyvsp[0].node)->nodeName); // needed for task #2;
     }
-#line 1401 "infix.tab.c"
+#line 1403 "infix.tab.c"
     break;
 
   case 10:
-#line 81 "infix.y"
+#line 83 "infix.y"
                                 {
         // same as + case, just change operation
         int output = (yyvsp[-2].node)->nodeVal - (yyvsp[0].node)->nodeVal;
@@ -1411,11 +1413,11 @@ yyreduce:
         sprintf((yyval.node)->equation, " = %s - %s;\n", (yyvsp[-2].node)->nodeName, (yyvsp[0].node)->nodeName);
         sprintf((yyval.node)->liveVars, "%s,%s,%s", (yyval.node)->nodeName, (yyvsp[-2].node)->nodeName, (yyvsp[0].node)->nodeName); // needed for task #2;
     }
-#line 1415 "infix.tab.c"
+#line 1417 "infix.tab.c"
     break;
 
   case 11:
-#line 90 "infix.y"
+#line 92 "infix.y"
                                 {
         // same as + case, just change operation
         int output = (yyvsp[-2].node)->nodeVal * (yyvsp[0].node)->nodeVal;
@@ -1425,11 +1427,11 @@ yyreduce:
         sprintf((yyval.node)->equation, " = %s * %s;\n", (yyvsp[-2].node)->nodeName, (yyvsp[0].node)->nodeName);
         sprintf((yyval.node)->liveVars, "%s,%s,%s", (yyval.node)->nodeName, (yyvsp[-2].node)->nodeName, (yyvsp[0].node)->nodeName); // needed for task #2;
     }
-#line 1429 "infix.tab.c"
+#line 1431 "infix.tab.c"
     break;
 
   case 12:
-#line 99 "infix.y"
+#line 101 "infix.y"
                                 {
         // same as + case, just change operation
         int output = (yyvsp[-2].node)->nodeVal / (yyvsp[0].node)->nodeVal;
@@ -1439,11 +1441,11 @@ yyreduce:
         sprintf((yyval.node)->equation, " = %s / %s;\n", (yyvsp[-2].node)->nodeName, (yyvsp[0].node)->nodeName);
         sprintf((yyval.node)->liveVars, "%s,%s,%s", (yyval.node)->nodeName, (yyvsp[-2].node)->nodeName, (yyvsp[0].node)->nodeName); // needed for task #2;
     }
-#line 1443 "infix.tab.c"
+#line 1445 "infix.tab.c"
     break;
 
   case 13:
-#line 108 "infix.y"
+#line 110 "infix.y"
                                 {
         // same as + case, just change operation
         int output = (yyvsp[-2].node)->nodeVal;
@@ -1456,11 +1458,11 @@ yyreduce:
         sprintf((yyval.node)->equation, " = %s ** %s;\n", (yyvsp[-2].node)->nodeName, (yyvsp[0].node)->nodeName);
         sprintf((yyval.node)->liveVars, "%s,%s,%s", (yyval.node)->nodeName, (yyvsp[-2].node)->nodeName, (yyvsp[0].node)->nodeName); // needed for task #2;
     }
-#line 1460 "infix.tab.c"
+#line 1462 "infix.tab.c"
     break;
 
   case 14:
-#line 120 "infix.y"
+#line 122 "infix.y"
                                 {
         int output;
         if((yyvsp[-2].node)->nodeVal == 0){
@@ -1490,12 +1492,15 @@ yyreduce:
         strcat(exp, exp_else);
         sprintf((yyval.node)->equation, "%s", exp);
         sprintf((yyval.node)->liveVars, "%s,%s,%s", (yyval.node)->nodeName, (yyvsp[-2].node)->nodeName, (yyvsp[0].node)->nodeName); // needed for task #2;
+
+
+
     }
-#line 1495 "infix.tab.c"
+#line 1500 "infix.tab.c"
     break;
 
   case 15:
-#line 150 "infix.y"
+#line 155 "infix.y"
                      {
         // same as + case, just change operation
         int output;
@@ -1510,11 +1515,11 @@ yyreduce:
         sprintf((yyval.node)->equation, " = %d;\n", output);
         sprintf((yyval.node)->liveVars, "%s", (yyval.node)->nodeName); // needed for task #2;
     }
-#line 1514 "infix.tab.c"
+#line 1519 "infix.tab.c"
     break;
 
   case 16:
-#line 164 "infix.y"
+#line 169 "infix.y"
                          {
         struct node* n = findNode((char*)(yyvsp[-2].name), (yyvsp[0].node)->nodeVal, HEAD); // creates new node if necessary
         n->nodeVal = (yyvsp[0].node)->nodeVal; // re-assigns node value
@@ -1522,22 +1527,22 @@ yyreduce:
         sprintf((yyval.node)->equation, " = %s;\n", (yyvsp[0].node)->nodeName);
         sprintf((yyval.node)->liveVars, "%s,%s", (yyval.node)->nodeName, (yyvsp[0].node)->nodeName); // needed for task #2;
     }
-#line 1526 "infix.tab.c"
+#line 1531 "infix.tab.c"
     break;
 
   case 17:
-#line 171 "infix.y"
+#line 176 "infix.y"
           {
         struct node* n = findNode((char*)(yyvsp[0].name), 0, HEAD); // creates new node if necessary (shouldn't have to in this case)
         // Add variable to input variables for task #3
         addNewInputVariable(n->nodeName);
         (yyval.node) = newNode(n->nodeName, n->nodeVal); // add new node
     }
-#line 1537 "infix.tab.c"
+#line 1542 "infix.tab.c"
     break;
 
 
-#line 1541 "infix.tab.c"
+#line 1546 "infix.tab.c"
 
       default: break;
     }
@@ -1769,7 +1774,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 177 "infix.y"
+#line 182 "infix.y"
 
 
 // Helper function to add input variable names to global list with duplicate protection
@@ -1792,11 +1797,12 @@ int main(int argc, char* argv[]){
     yyin = fopen("equation.txt", "r"); // file should always be equation.txt
     printf("\n"); // TODO: Program segfaults without this. What is going on?
     yyparse();
+    printStack(STACK);
 
     // Task #1
     printf("\n****************************\n");
-    printf("Revised Frontend (Task #1):\n");
-    printStack(STACK);  
+    printf("Generating Basic Blocks (Task #1):\n");  
+    buildBasicBlocks(STACK);
 
     // Complete
     fclose(yyin);

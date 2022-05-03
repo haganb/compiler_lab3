@@ -1,5 +1,5 @@
-infix: infix.tab.o lex.yy.o node.o stack.o registers.o
-	gcc -o infix lex.yy.o infix.tab.o node.o stack.o registers.o
+infix: infix.tab.o lex.yy.o node.o stack.o registers.o blocks.o
+	gcc -o infix lex.yy.o infix.tab.o node.o stack.o registers.o blocks.o
 
 lex.yy.o: infix.l
 	flex infix.l; gcc -c lex.yy.c
@@ -15,6 +15,9 @@ node.o: node.c
 
 registers.o: registers.c 
 	gcc -c registers.c
+
+blocks.o: blocks.c 
+	gcc -c blocks.c
 
 clean:
 	rm -f p2 infix.output *.o infix.tab.c lex.yy.c

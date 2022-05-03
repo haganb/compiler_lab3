@@ -1,3 +1,6 @@
+#ifndef _STACK_H_
+#define _STACK_H_
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -15,3 +18,5 @@ struct node* pop(struct stack* s);
 // helper functions
 void printStack(struct stack* s);
 void deleteStack(struct stack* s);
+
+#endif
