@@ -1797,7 +1797,7 @@ int main(int argc, char* argv[]){
     yyin = fopen("equation.txt", "r"); // file should always be equation.txt
     printf("\n"); // TODO: Program segfaults without this. What is going on?
     yyparse();
-    printStack(STACK);
+    //printStack(STACK);
 
     // Task #1
     printf("\n****************************\n");
@@ -1805,10 +1805,11 @@ int main(int argc, char* argv[]){
     buildBasicBlocks(STACK);
 
     // Task #2
-    printf("\n****************************\n");
+    printf("****************************\n");
     printf("Performance Modelling (Task #2):\n");
     calculateLatency(STACK);
 
+    printf("****************************\n");
     // Complete
     fclose(yyin);
     return 0;
