@@ -9,7 +9,6 @@
 
 struct graphNode{
     char* nodeName;
-    int allocatedRegister; // id for whatever register is currently allocated for
 
     struct graphNode** edges; // keep track of which nodes are dependent on other nodes
     int edgeCount; // total number of edges for a given node
